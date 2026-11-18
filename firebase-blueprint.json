@@ -1,0 +1,139 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Perfil e preferências da usuária do planner",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 120 },
+        "avatarUrl": { "type": "string", "maxLength": 500 },
+        "firstDayOfWeek": { "type": "string", "enum": ["sunday", "monday"] },
+        "dateFormat": { "type": "string", "maxLength": 20 },
+        "defaultReminderMinutes": { "type": "number" },
+        "themePalette": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["displayName", "email"]
+    },
+    "Event": {
+      "title": "Event",
+      "description": "Compromissos e eventos agendados no calendário",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "date": { "type": "string", "maxLength": 10 },
+        "startTime": { "type": "string", "maxLength": 5 },
+        "endTime": { "type": "string", "maxLength": 5 },
+        "categoryId": { "type": "string", "maxLength": 50 },
+        "color": { "type": "string", "maxLength": 30 },
+        "location": { "type": "string", "maxLength": 150 },
+        "reminderOption": { "type": "string", "maxLength": 50 },
+        "reminderCustomMinutes": { "type": "number" },
+        "repeat": { "type": "string", "enum": ["none", "daily", "weekly", "monthly"] },
+        "completed": { "type": "boolean" },
+        "isFavorite": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "title", "date", "startTime", "categoryId", "color"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Tarefas diárias e listas de afazeres",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "dueDate": { "type": "string", "maxLength": 10 },
+        "dueTime": { "type": "string", "maxLength": 5 },
+        "categoryId": { "type": "string", "maxLength": 50 },
+        "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+        "completed": { "type": "boolean" },
+        "isFavorite": { "type": "boolean" },
+        "completedAt": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "name", "priority", "completed"]
+    },
+    "Note": {
+      "title": "Note",
+      "description": "Anotações do caderno digital com cores e categorias",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 150 },
+        "content": { "type": "string", "maxLength": 10000 },
+        "color": { "type": "string", "maxLength": 30 },
+        "categoryId": { "type": "string", "maxLength": 50 },
+        "date": { "type": "string", "maxLength": 10 },
+        "isFavorite": { "type": "boolean" },
+        "isQuickNote": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "title", "color", "categoryId"]
+    },
+    "Reminder": {
+      "title": "Reminder",
+      "description": "Lembretes pontuais com status e notificações",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 500 },
+        "date": { "type": "string", "maxLength": 10 },
+        "time": { "type": "string", "maxLength": 5 },
+        "status": { "type": "string", "enum": ["pending", "sent", "completed", "dismissed"] },
+        "isFavorite": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "title", "date", "time", "status"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Categorias personalizadas de organização",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 50 },
+        "color": { "type": "string", "maxLength": 30 },
+        "icon": { "type": "string", "maxLength": 50 },
+        "isCustom": { "type": "boolean" }
+      },
+      "required": ["userId", "name", "color"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Dados do perfil da usuária"
+    },
+    "/users/{userId}/events/{eventId}": {
+      "schema": "Event",
+      "description": "Compromissos privados da usuária"
+    },
+    "/users/{userId}/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "Tarefas privadas da usuária"
+    },
+    "/users/{userId}/notes/{noteId}": {
+      "schema": "Note",
+      "description": "Anotações do caderno digital da usuária"
+    },
+    "/users/{userId}/reminders/{reminderId}": {
+      "schema": "Reminder",
+      "description": "Lembretes da usuária"
+    },
+    "/users/{userId}/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Categorias de rotina da usuária"
+    }
+  }
+}

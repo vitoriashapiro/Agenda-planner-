@@ -1,0 +1,6 @@
+{
+  "name": "Meu Planner",
+  "description": "Planner digital pessoal feminino para organização de rotina, tarefas, compromissos, anotações e lembretes.",
+  "requestFramePermissions": ["notifications"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

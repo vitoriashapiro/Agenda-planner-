@@ -1,0 +1,109 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-blush: #F4DCE5;
+    --color-soft-rose: #F9EAF0;
+    --color-antique-rose: #D9A2B5;
+    --color-cream: #FFF9F4;
+    --color-lilac: #EAE3F5;
+    --color-text-taupe: #75656D;
+    --color-gold: #ebbc65;
+  }
+
+  html,
+  body,
+  #root {
+    background-color: #FFF9F4;
+    color: #75656D;
+    font-family: 'Baloo 2', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font-family: 'Baloo 2', sans-serif;
+  }
+}
+
+/* Padronização da fonte em todas as páginas */
+#root,
+#root * {
+  font-family: 'Baloo 2', sans-serif !important;
+}
+
+/* Fontes especiais do Planner */
+#root .font-sans-planner{
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+}
+
+#root .font-script {
+  font-family: 'Alex Brush', cursive !important;
+}
+
+#root .font-sans-planner {
+  font-family: 'Baloo 2', sans-serif !important;
+}
+
+/* Custom delicate scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(249, 234, 240, 0.4);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(217, 162, 181, 0.4);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 162, 181, 0.7);
+}
+
+/* Paper lined texture */
+.paper-lined {
+  background-color: #ebe2e2;
+  background-image: linear-gradient(#ebe2e2 1px, transparent 1px);
+  background-size: 100% 28px;
+  line-height: 28px;
+}
+
+/* Paper dotted grid texture */
+.paper-dotted {
+  background-color: #fd84bc;
+  background-image: radial-gradient(#D9A2B5 0.75px, transparent 0.75px);
+  background-size: 18px 18px;
+}
+
+/* Delicate subtle box shadow */
+.shadow-planner {
+  box-shadow: 0 4px 20px -2px rgba(117, 101, 109, 0.08),
+              0 2px 6px -1px rgba(217, 162, 181, 0.12);
+}
+
+.shadow-planner-hover {
+  box-shadow: 0 8px 30px -4px rgba(117, 101, 109, 0.12),
+              0 4px 12px -2px rgba(217, 162, 181, 0.18);
+}
+
+/* 🎀 Cursor personalizado */
+* {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M16 27 C13 24 4 18 4 11 C4 6 10 4 14 7 L16 9 L18 7 C22 4 27 6 28 11 C28 18 19 24 16 27Z' fill='%23F4B6CC' stroke='%23C77F9F' stroke-width='1.5'/%3E%3C/svg%3E") 4 4, auto;
+}
+
+/* Cursor de digitação */
+input,
+textarea,
+[contenteditable="true"] {
+  cursor: text;
+}
