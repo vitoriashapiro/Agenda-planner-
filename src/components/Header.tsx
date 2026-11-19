@@ -94,9 +94,13 @@ export const Header: React.FC = () => {
           <div className="flex items-center gap-2">
             <h1 className="text-lg sm:text-xl font-semibold text-[#786570] truncate">
               {getGreeting()},{' '}
-              <span className="text-[#C17E9B] font-bold">
-                {userProfile.displayName.split(' ')[0]}
-              </span>
+
+              {userProfile.displayName?.trim() && (
+                <span className="text-[#C17E9B] font-bold">
+                  {userProfile.displayName.trim().split(' ')[0]}
+                </span>
+              )}
+
               <span className="text-[#D9A2B5]"> ♡</span>
             </h1>
 
@@ -128,8 +132,8 @@ export const Header: React.FC = () => {
             />
 
             <kbd className="hidden lg:inline-flex items-center whitespace-nowrap shrink-0 leading-none px-1.5 py-1 text-[9px] text-[#BDA3AE] bg-[#FFF8FA] border border-[#F5E6EC] rounded-md">
-  Ctrl K
-</kbd>
+              Ctrl K
+            </kbd>
           </div>
         </div>
 

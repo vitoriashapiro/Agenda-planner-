@@ -6,11 +6,11 @@ export default function SpotifyPlayer() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-5 left-5 z-50">
+    <div className="fixed bottom-20 right-3 sm:bottom-5 sm:left-5 sm:right-auto z-40">
 
       {/* Painel do Spotify */}
       <div
-        className={`mb-3 w-[min(340px,calc(100vw-32px))] overflow-hidden rounded-2xl border border-[#F4DCE5] bg-white shadow-xl transition-all duration-300 ${
+        className={`mb-3 w-[min(300px,calc(100vw-24px))] sm:w-[340px] overflow-hidden rounded-2xl border border-[#F4DCE5] bg-white shadow-xl transition-all duration-300 ${
           isOpen
             ? 'max-h-[410px] opacity-100'
             : 'max-h-0 opacity-0 border-0 mb-0'
@@ -48,11 +48,12 @@ export default function SpotifyPlayer() {
       {/* Botão compacto */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-full bg-[#E8B6C8] px-4 py-3 text-white shadow-lg transition-all hover:bg-[#D99DB5] hover:scale-105"
+        className="flex items-center gap-2 rounded-full bg-[#E8B6C8] px-3 py-2.5 sm:px-4 sm:py-3 text-white shadow-lg transition-all hover:bg-[#D99DB5] hover:scale-105"
         title={isOpen ? 'Minimizar música' : 'Abrir player de música'}
+        aria-label={isOpen ? 'Minimizar música' : 'Abrir player de música'}
       >
         <Music2 size={20} />
-        <span className="text-sm font-semibold">
+        <span className="text-xs sm:text-sm font-semibold">
           {isOpen ? 'Minimizar' : 'Minha música'}
         </span>
       </button>
@@ -60,4 +61,3 @@ export default function SpotifyPlayer() {
     </div>
   );
 }
-
