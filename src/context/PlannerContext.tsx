@@ -170,6 +170,7 @@ export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, []);
 
  
+ 
   // Monitorar estado de autenticação Firebase
   useEffect(() => {
     const { auth } = getFirebaseInstances();
@@ -180,15 +181,16 @@ export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       if (user) {
         const displayName = user.displayName?.trim() || '';
+
         console.log('NOME RECEBIDO DO FIREBASE:', user.displayName);
-console.log('EMAIL DO FIREBASE:', user.email);
+        console.log('EMAIL DO FIREBASE:', user.email);
 
         setUserProfile((prev) => {
           const next: UserProfile = {
             ...prev,
             displayName,
             email: user.email || '',
-            ...(user.photoURL ? { avatarUrl: user.photoURL } : {}),
+            avatarUrl: user.photoURL || '',
           };
 
           LocalStorageManager.saveProfile(next);
@@ -206,6 +208,8 @@ console.log('EMAIL DO FIREBASE:', user.email);
           const next: UserProfile = {
             ...prev,
             displayName: '',
+            email: '',
+            avatarUrl: '',
           };
 
           LocalStorageManager.saveProfile(next);
