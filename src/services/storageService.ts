@@ -1,24 +1,32 @@
+
 /**
  * Gerenciador unificado de dados do Meu Planner
- * Suporta Firestore em tempo real + espelho local resiliente
+ * Suporta Firestore em tempo real + armazenamento local separado por usuário.
  */
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  deleteDoc, 
-  onSnapshot, 
-  Unsubscribe 
+
+import {
+  collection,
+  doc,
+  setDoc,
+  deleteDoc,
+  onSnapshot,
+  type Unsubscribe,
 } from 'firebase/firestore';
-import { 
-  Category, 
-  PlannerEvent, 
-  PlannerTask, 
-  PlannerNote, 
-  PlannerReminder, 
-  UserProfile 
+
+import {
+  Category,
+  PlannerEvent,
+  PlannerTask,
+  PlannerNote,
+  PlannerReminder,
+  UserProfile,
 } from '../types/planner';
+
 import { getFirebaseInstances } from './firebaseConfig';
+
+// ======================================================
+// DADOS PADRÃO
+// ======================================================
 
 export const DEFAULT_CATEGORIES: Category[] = [
   { id: 'cat-pessoal', name: 'Pessoal', color: '#D9A2B5', bgColor: '#FDF0F4', iconName: 'Heart' },
@@ -43,6 +51,10 @@ export const DEFAULT_USER_PROFILE: UserProfile = {
   browserNotificationsEnabled: true,
 };
 
+// ======================================================
+// ARMAZENAMENTO LOCAL POR USUÁRIO
+// ======================================================
+
 const STORAGE_KEYS = {
   EVENTS: 'meu_planner_events',
   TASKS: 'meu_planner_tasks',
@@ -52,25 +64,88 @@ const STORAGE_KEYS = {
   PROFILE: 'meu_planner_profile',
 };
 
-// Formato YYYY-MM-DD para hoje
+let activeStorageUserId: string | null = null;
+
+function getStorageKey(key: string): string {
+  return activeStorageUserId
+    ? `${key}_${activeStorageUserId}`
+    : `${key}_anonymous`;
+}
+
+/**
+ * Define qual usuário está utilizando o armazenamento local.
+ */
+export function setStorageUser(userId: string | null): void {
+  activeStorageUserId = userId;
+}
+
+/**
+ * Migra os dados antigos para o armazenamento individual
+ * do usuário informado.
+ *
+ * Deve ser chamada somente para a conta principal que
+ * receberá os dados antigos.
+ */
+export function migrateLegacyStorageToUser(userId: string): void {
+  if (!userId) return;
+
+  const migrationKey = `meu_planner_legacy_migrated_${userId}`;
+
+  if (localStorage.getItem(migrationKey) === 'true') {
+    return;
+  }
+
+  const previousUserId = activeStorageUserId;
+
+  try {
+    activeStorageUserId = userId;
+
+    for (const key of Object.values(STORAGE_KEYS)) {
+      const oldValue = localStorage.getItem(key);
+      const newKey = getStorageKey(key);
+
+      if (
+        oldValue !== null &&
+        localStorage.getItem(newKey) === null
+      ) {
+        localStorage.setItem(newKey, oldValue);
+      }
+    }
+
+    localStorage.setItem(migrationKey, 'true');
+  } finally {
+    activeStorageUserId = previousUserId;
+  }
+}
+
+// ======================================================
+// DATAS
+// ======================================================
+
 export function getTodayString(): string {
   const d = new Date();
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
+
   return `${year}-${month}-${day}`;
 }
 
 export function getTomorrowString(): string {
   const d = new Date();
   d.setDate(d.getDate() + 1);
+
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
+
   return `${year}-${month}-${day}`;
 }
 
-// Dados iniciais elegantes para inaugurar o planner
+// ======================================================
+// DADOS INICIAIS
+// ======================================================
+
 function createInitialSeedData(): {
   events: PlannerEvent[];
   tasks: PlannerTask[];
@@ -115,7 +190,7 @@ function createInitialSeedData(): {
       isFavorite: false,
       createdAt: now,
       updatedAt: now,
-    }
+    },
   ];
 
   const tasks: PlannerTask[] = [
@@ -156,7 +231,7 @@ function createInitialSeedData(): {
       isFavorite: false,
       createdAt: now,
       updatedAt: now,
-    }
+    },
   ];
 
   const notes: PlannerNote[] = [
@@ -164,7 +239,7 @@ function createInitialSeedData(): {
       id: 'not-1',
       title: 'Bem-vinda ao seu Meu Planner! 🌸',
       content: 'Este é o seu cantinho seguro e tranquilo para planejar cada momento com leveza e serenidade.\n\n✨ Aqui você pode:\n- Anotar seus pensamentos e listas de desejos\n- Guardar lembretes com carinho\n- Acompanhar seus compromissos no calendário diário, semanal e mensal\n- Celebrar cada conquista pequena ou grande!\n\nLembre-se sempre: um passo de cada vez.',
-      color: '#F9EAF0', // Rosa claro suave
+      color: '#F9EAF0',
       categoryId: 'cat-pessoal',
       date: today,
       isFavorite: true,
@@ -176,7 +251,7 @@ function createInitialSeedData(): {
       id: 'not-2',
       title: 'Ideias de autocuidado e bem-estar',
       content: '1. Beber 2L de água com rodelas de limão e hortelã.\n2. Caminhada matinal sentindo o ar fresco.\n3. Skincare noturno com massagem facial suave.\n4. Dormir sem telas 30 minutos antes.',
-      color: '#EAE3F5', // Lilás suave
+      color: '#EAE3F5',
       categoryId: 'cat-saude',
       date: today,
       isFavorite: true,
@@ -194,7 +269,7 @@ function createInitialSeedData(): {
       isQuickNote: true,
       createdAt: now,
       updatedAt: now,
-    }
+    },
   ];
 
   const reminders: PlannerReminder[] = [
@@ -219,20 +294,26 @@ function createInitialSeedData(): {
       isFavorite: false,
       createdAt: now,
       updatedAt: now,
-    }
+    },
   ];
 
   return { events, tasks, notes, reminders };
 }
 
+// ======================================================
+// GERENCIADOR LOCAL
+// ======================================================
+
 export class LocalStorageManager {
   static getEvents(): PlannerEvent[] {
-    const raw = localStorage.getItem(STORAGE_KEYS.EVENTS);
+    const raw = localStorage.getItem(getStorageKey(STORAGE_KEYS.EVENTS));
+
     if (!raw) {
       const seed = createInitialSeedData();
       this.saveEvents(seed.events);
       return seed.events;
     }
+
     try {
       return JSON.parse(raw);
     } catch {
@@ -241,16 +322,21 @@ export class LocalStorageManager {
   }
 
   static saveEvents(events: PlannerEvent[]): void {
-    localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(events));
+    localStorage.setItem(
+      getStorageKey(STORAGE_KEYS.EVENTS),
+      JSON.stringify(events)
+    );
   }
 
   static getTasks(): PlannerTask[] {
-    const raw = localStorage.getItem(STORAGE_KEYS.TASKS);
+    const raw = localStorage.getItem(getStorageKey(STORAGE_KEYS.TASKS));
+
     if (!raw) {
       const seed = createInitialSeedData();
       this.saveTasks(seed.tasks);
       return seed.tasks;
     }
+
     try {
       return JSON.parse(raw);
     } catch {
@@ -259,16 +345,21 @@ export class LocalStorageManager {
   }
 
   static saveTasks(tasks: PlannerTask[]): void {
-    localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasks));
+    localStorage.setItem(
+      getStorageKey(STORAGE_KEYS.TASKS),
+      JSON.stringify(tasks)
+    );
   }
 
   static getNotes(): PlannerNote[] {
-    const raw = localStorage.getItem(STORAGE_KEYS.NOTES);
+    const raw = localStorage.getItem(getStorageKey(STORAGE_KEYS.NOTES));
+
     if (!raw) {
       const seed = createInitialSeedData();
       this.saveNotes(seed.notes);
       return seed.notes;
     }
+
     try {
       return JSON.parse(raw);
     } catch {
@@ -277,16 +368,21 @@ export class LocalStorageManager {
   }
 
   static saveNotes(notes: PlannerNote[]): void {
-    localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
+    localStorage.setItem(
+      getStorageKey(STORAGE_KEYS.NOTES),
+      JSON.stringify(notes)
+    );
   }
 
   static getReminders(): PlannerReminder[] {
-    const raw = localStorage.getItem(STORAGE_KEYS.REMINDERS);
+    const raw = localStorage.getItem(getStorageKey(STORAGE_KEYS.REMINDERS));
+
     if (!raw) {
       const seed = createInitialSeedData();
       this.saveReminders(seed.reminders);
       return seed.reminders;
     }
+
     try {
       return JSON.parse(raw);
     } catch {
@@ -295,15 +391,20 @@ export class LocalStorageManager {
   }
 
   static saveReminders(reminders: PlannerReminder[]): void {
-    localStorage.setItem(STORAGE_KEYS.REMINDERS, JSON.stringify(reminders));
+    localStorage.setItem(
+      getStorageKey(STORAGE_KEYS.REMINDERS),
+      JSON.stringify(reminders)
+    );
   }
 
   static getCategories(): Category[] {
-    const raw = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
+    const raw = localStorage.getItem(getStorageKey(STORAGE_KEYS.CATEGORIES));
+
     if (!raw) {
       this.saveCategories(DEFAULT_CATEGORIES);
       return DEFAULT_CATEGORIES;
     }
+
     try {
       return JSON.parse(raw);
     } catch {
@@ -312,62 +413,143 @@ export class LocalStorageManager {
   }
 
   static saveCategories(categories: Category[]): void {
-    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+    localStorage.setItem(
+      getStorageKey(STORAGE_KEYS.CATEGORIES),
+      JSON.stringify(categories)
+    );
   }
 
   static getProfile(): UserProfile {
-    const raw = localStorage.getItem(STORAGE_KEYS.PROFILE);
+    const raw = localStorage.getItem(getStorageKey(STORAGE_KEYS.PROFILE));
+
     if (!raw) {
       this.saveProfile(DEFAULT_USER_PROFILE);
       return DEFAULT_USER_PROFILE;
     }
+
     try {
-      return { ...DEFAULT_USER_PROFILE, ...JSON.parse(raw) };
+      return {
+        ...DEFAULT_USER_PROFILE,
+        ...JSON.parse(raw),
+      };
     } catch {
       return DEFAULT_USER_PROFILE;
     }
   }
 
   static saveProfile(profile: UserProfile): void {
-    localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(profile));
+    localStorage.setItem(
+      getStorageKey(STORAGE_KEYS.PROFILE),
+      JSON.stringify(profile)
+    );
+  }
+}
+
+// ======================================================
+// SINCRONIZAÇÃO COM FIRESTORE
+// ======================================================
+
+type PlannerCollection =
+  | 'events'
+  | 'tasks'
+  | 'notes'
+  | 'reminders'
+  | 'categories';
+
+/**
+ * Cria ou atualiza um documento na coleção individual do usuário.
+ */
+export async function syncDocToFirestore<T extends { id: string }>(
+  userId: string,
+  subcollection: PlannerCollection,
+  item: T
+): Promise<void> {
+  const { db } = getFirebaseInstances();
+
+  if (!db || !userId) return;
+
+  try {
+    const docRef = doc(
+      db,
+      'users',
+      userId,
+      subcollection,
+      item.id
+    );
+
+    const cleanItem = Object.fromEntries(
+      Object.entries(item).filter(([, value]) => value !== undefined)
+    );
+
+    await setDoc(docRef, cleanItem, { merge: true });
+  } catch (err) {
+    console.warn(
+      `Firestore sync warning on ${subcollection}/${item.id}:`,
+      err
+    );
   }
 }
 
 /**
- * Operações na Nuvem Firestore com tratamento resiliente de erros
+ * Exclui um documento da coleção individual do usuário.
  */
-export async function syncDocToFirestore<T extends { id: string }>(
-  userId: string,
-  subcollection: 'events' | 'tasks' | 'notes' | 'reminders' | 'categories',
-  item: T
-): Promise<void> {
-  const { db } = getFirebaseInstances();
-  if (!db || !userId) return;
-
-  try {
-    const docRef = doc(db, 'users', userId, subcollection, item.id);
-    const cleanItem = Object.fromEntries(
-  Object.entries(item).filter(([, value]) => value !== undefined)
-);
-
-await setDoc(docRef, cleanItem, { merge: true });
-  } catch (err) {
-    console.warn(`Firestore sync warning on ${subcollection}/${item.id}:`, err);
-  }
-}
-
 export async function deleteDocFromFirestore(
   userId: string,
-  subcollection: 'events' | 'tasks' | 'notes' | 'reminders' | 'categories',
+  subcollection: PlannerCollection,
   itemId: string
 ): Promise<void> {
   const { db } = getFirebaseInstances();
+
   if (!db || !userId) return;
 
   try {
-    const docRef = doc(db, 'users', userId, subcollection, itemId);
+    const docRef = doc(
+      db,
+      'users',
+      userId,
+      subcollection,
+      itemId
+    );
+
     await deleteDoc(docRef);
   } catch (err) {
-    console.warn(`Firestore delete warning on ${subcollection}/${itemId}:`, err);
+    console.warn(
+      `Firestore delete warning on ${subcollection}/${itemId}:`,
+      err
+    );
   }
+}
+
+/**
+ * Escuta em tempo real os documentos da coleção do usuário.
+ */
+export function subscribeToFirestore<T extends { id: string }>(
+  userId: string,
+  subcollection: PlannerCollection,
+  onData: (items: T[]) => void,
+  onError?: (error: Error) => void
+): Unsubscribe | null {
+  const { db } = getFirebaseInstances();
+
+  if (!db || !userId) return null;
+
+  return onSnapshot(
+    collection(db, 'users', userId, subcollection),
+    (snapshot) => {
+      const items = snapshot.docs.map((document) => ({
+        ...document.data(),
+        id: document.id,
+      } as T));
+
+      onData(items);
+    },
+    (error) => {
+      console.error(
+        `Erro ao carregar ${subcollection} do Firestore:`,
+        error
+      );
+
+      onError?.(error);
+    }
+  );
 }
