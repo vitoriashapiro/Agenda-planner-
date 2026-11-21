@@ -338,7 +338,7 @@ export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({
       // Se a nuvem já tiver dados, eles serão carregados.
       // Se estiver vazia, os dados locais serão enviados uma vez.
       const listenToCollection = <T extends { id: string }>(
-        collectionName: string,
+        collectionName: 'events' | 'tasks' | 'notes' | 'reminders' | 'categories',
         localItems: T[],
         applyItems: (items: T[]) => void,
         saveItems: (items: T[]) => void
@@ -386,7 +386,9 @@ export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({
           }
         );
 
-        subscriptions.push(unsubscribe);
+        if (unsubscribe) {
+  subscriptions.push(unsubscribe);
+}
       };
 
       listenToCollection<PlannerEvent>(

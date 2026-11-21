@@ -80,7 +80,7 @@ export const BottomNav: React.FC = () => {
       )}
 
       {/* Barra de Navegação Inferior Fixa */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#F4DCE5] px-3 py-2 flex items-center justify-around shadow-lg">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#F4DCE5] px-3 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex items-center justify-around shadow-lg">
         {mainTabs.slice(0, 2).map((item) => {
           const Icon = item.icon;
           const isActive = currentTab === item.tab;

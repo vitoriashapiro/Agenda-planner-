@@ -62,7 +62,7 @@ const MainContent: React.FC = () => {
         <Header />
 
         {/* Conteúdo */}
-        <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-9 animate-in fade-in duration-300">
+        <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 py-5 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-7 md:pb-9 lg:px-8 lg:py-9 animate-in fade-in duration-300">
           <div className="w-full min-w-0">
             {renderCurrentView()}
           </div>

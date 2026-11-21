@@ -324,10 +324,14 @@ export const HomeView: React.FC = () => {
                             {evt.title}
                           </p>
 
-                          <div className="flex items-center gap-2 mt-1 text-xs text-[#AA96A1]">
-                            <span>{evt.startTime}{evt.endTime ? ` - ${evt.endTime}` : ''}</span>
-                            {evt.location && <span>• {evt.location}</span>}
-                          </div>
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 text-xs text-[#AA96A1]">
+  <span className="whitespace-nowrap shrink-0">
+    {evt.startTime}{evt.endTime ? ` - ${evt.endTime}` : ''}
+  </span>
+  {evt.location && (
+    <span className="min-w-0 break-words">• {evt.location}</span>
+  )}
+</div>
                         </div>
                       </div>
 

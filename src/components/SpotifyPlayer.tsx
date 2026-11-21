@@ -6,7 +6,7 @@ export default function SpotifyPlayer() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-20 right-3 sm:bottom-5 sm:left-5 sm:right-auto z-40">
+    <div className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] right-3 sm:bottom-5 sm:left-5 sm:right-auto z-40">
 
       {/* Painel do Spotify */}
       <div

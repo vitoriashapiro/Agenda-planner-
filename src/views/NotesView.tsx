@@ -153,17 +153,17 @@ export const NotesView: React.FC = () => {
         </div>
 
         {/* Input rápido */}
-        <form onSubmit={handleCreateQuickNote} className="flex gap-2">
+        <form onSubmit={handleCreateQuickNote} className="flex w-full min-w-0 flex-col gap-2 sm:flex-row">
           <input 
             type="text"
             placeholder="Escreva uma ideia rápida e pressione Enter (ex: comprar vela aromática)..."
             value={quickNoteText}
             onChange={(e) => setQuickNoteText(e.target.value)}
-            className="flex-1 px-4 py-2 text-xs rounded-2xl border border-[#F4DCE5] focus:border-[#D9A2B5] outline-none text-[#75656D] bg-[#FFF9F4]"
+           className="w-full min-w-0 flex-1 px-4 py-2 text-xs rounded-2xl border border-[#F4DCE5] focus:border-[#D9A2B5] outline-none text-[#75656D] bg-[#FFF9F4]"
           />
-          <button
+                        <button
             type="submit"
-            className="px-4 py-2 bg-[#F9EAF0] hover:bg-[#F4DCE5] text-[#B26E86] text-xs font-semibold rounded-2xl transition-colors shrink-0"
+            className="px-4 py-2 bg-[#F9EAF0] hover:bg-[#F4DCE5] text-[#B26E86] text-xs font-semibold rounded-2xl transition-colors shrink-0 self-end sm:self-auto"
           >
             + Fixar
           </button>

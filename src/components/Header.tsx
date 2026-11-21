@@ -191,7 +191,7 @@ export const Header: React.FC = () => {
             </button>
 
             {isNotificationsOpen && (
-              <div className="absolute right-0 mt-3 w-80 sm:w-[350px] bg-white rounded-2xl shadow-planner border border-[#F3DDE6] py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="fixed left-4 right-4 top-20 w-auto max-w-[calc(100vw-2rem)] sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-3 sm:w-[350px] bg-white rounded-2xl shadow-planner border border-[#F3DDE6] py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
 
                 {/* Cabeçalho */}
                 <div className="px-4 py-3 border-b border-[#F9EAF0] flex items-center justify-between">
