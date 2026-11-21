@@ -6,7 +6,6 @@ import React, { useState } from 'react';
 import {
   Home,
   Calendar,
-  Plus,
   CheckSquare,
   BookOpen,
   MoreHorizontal,
@@ -21,7 +20,7 @@ import { usePlanner } from '../context/PlannerContext';
 import { NavigationTab } from '../types/planner';
 
 export const BottomNav: React.FC = () => {
-  const { currentTab, setCurrentTab, openQuickAdd } = usePlanner();
+  const { currentTab, setCurrentTab } = usePlanner();
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
   const mainTabs = [
@@ -81,26 +80,15 @@ export const BottomNav: React.FC = () => {
                   </button>
                 );
               })}
-
-              {/* Música */}
-              <button
-                onClick={() => {
-                  setIsMoreMenuOpen(false);
-                  window.dispatchEvent(new Event('planner:openSpotify'));
-                }}
-                className="flex items-center gap-3 p-3 rounded-2xl border border-[#F4DCE5] bg-[#FFF9F4] text-[#75656D] text-xs font-medium transition-all hover:bg-[#F9EAF0]"
-              >
-                <Music2 className="w-4 h-4 text-[#B26E86]" />
-                <span>Música</span>
-              </button>
             </div>
           </div>
         </div>
       )}
 
       {/* Barra de Navegação Inferior */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#F4DCE5] px-3 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex items-center justify-around shadow-lg">
-        {mainTabs.slice(0, 2).map((item) => {
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#F4DCE5] px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex items-center justify-around shadow-lg">
+
+        {mainTabs.map((item) => {
           const Icon = item.icon;
           const isActive = currentTab === item.tab;
 
@@ -108,7 +96,7 @@ export const BottomNav: React.FC = () => {
             <button
               key={item.tab}
               onClick={() => setCurrentTab(item.tab)}
-              className={`flex flex-col items-center gap-1 py-1 px-3 text-[10px] font-medium transition-colors ${
+              className={`flex flex-1 min-w-0 flex-col items-center gap-1 py-1 px-1 text-[10px] font-medium transition-colors ${
                 isActive ? 'text-[#B26E86] font-semibold' : 'text-[#9B8C94]'
               }`}
             >
@@ -118,39 +106,21 @@ export const BottomNav: React.FC = () => {
           );
         })}
 
-        
-{/* Botão Central de Adicionar */}
-<button
-  onClick={() => openQuickAdd('event')}
-  className="w-10 h-10 rounded-2xl bg-[#F9EAF0] text-[#B26E86] flex items-center justify-center transition-all hover:bg-[#F4DCE5] active:scale-95"
-  aria-label="Adicionar novo item"
->
-  <Plus className="w-5 h-5 stroke-[2]" />
-</button>
+        {/* Música */}
+        <button
+          onClick={() => {
+            window.dispatchEvent(new Event('planner:openSpotify'));
+          }}
+          className="flex flex-1 min-w-0 flex-col items-center gap-1 py-1 px-1 text-[10px] font-medium text-[#9B8C94] transition-colors"
+        >
+          <Music2 className="w-5 h-5 stroke-[1.5]" />
+          <span>Música</span>
+        </button>
 
-
-        {mainTabs.slice(2, 4).map((item) => {
-          const Icon = item.icon;
-          const isActive = currentTab === item.tab;
-
-          return (
-            <button
-              key={item.tab}
-              onClick={() => setCurrentTab(item.tab)}
-              className={`flex flex-col items-center gap-1 py-1 px-3 text-[10px] font-medium transition-colors ${
-                isActive ? 'text-[#B26E86] font-semibold' : 'text-[#9B8C94]'
-              }`}
-            >
-              <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.2]' : 'stroke-[1.5]'}`} />
-              <span>{item.label}</span>
-            </button>
-          );
-        })}
-
-        {/* Botão Mais */}
+        {/* Mais */}
         <button
           onClick={() => setIsMoreMenuOpen(true)}
-          className={`flex flex-col items-center gap-1 py-1 px-3 text-[10px] font-medium transition-colors ${
+          className={`flex flex-1 min-w-0 flex-col items-center gap-1 py-1 px-1 text-[10px] font-medium transition-colors ${
             moreTabs.some((m) => m.tab === currentTab)
               ? 'text-[#B26E86] font-semibold'
               : 'text-[#9B8C94]'
