@@ -118,14 +118,16 @@ export const BottomNav: React.FC = () => {
           );
         })}
 
-        {/* Botão Central de Adicionar - tamanho ajustado */}
-        <button
-          onClick={() => openQuickAdd('event')}
-          
-          aria-label="Adicionar novo item"className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#D9A2B5] to-[#E8BAC9] text-white flex items-center justify-center shadow-md active:scale-95 transition-transform"
-        >
-          <Plus className="w-[21px] h-[21px] stroke-[2.5]" />
-        </button>
+        
+{/* Botão Central de Adicionar */}
+<button
+  onClick={() => openQuickAdd('event')}
+  className="w-10 h-10 rounded-2xl bg-[#F9EAF0] text-[#B26E86] flex items-center justify-center transition-all hover:bg-[#F4DCE5] active:scale-95"
+  aria-label="Adicionar novo item"
+>
+  <Plus className="w-5 h-5 stroke-[2]" />
+</button>
+
 
         {mainTabs.slice(2, 4).map((item) => {
           const Icon = item.icon;
