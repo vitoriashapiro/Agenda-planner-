@@ -1,16 +1,27 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Music2, Minus } from 'lucide-react';
 
 export default function SpotifyPlayer() {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Recebe o comando do botão Música no menu Mais
+  useEffect(() => {
+    const openSpotify = () => setIsOpen(true);
+
+    window.addEventListener('planner:openSpotify', openSpotify);
+
+    return () => {
+      window.removeEventListener('planner:openSpotify', openSpotify);
+    };
+  }, []);
+
   return (
-    <div className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] right-3 sm:bottom-5 sm:left-5 sm:right-auto z-40">
+    <div className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] right-3 md:bottom-5 md:left-5 md:right-auto z-40">
 
       {/* Painel do Spotify */}
       <div
-        className={`mb-3 w-[min(300px,calc(100vw-24px))] sm:w-[340px] overflow-hidden rounded-2xl border border-[#F4DCE5] bg-white shadow-xl transition-all duration-300 ${
+        className={`mb-3 w-[min(300px,calc(100vw-24px))] md:w-[340px] overflow-hidden rounded-2xl border border-[#F4DCE5] bg-white shadow-xl transition-all duration-300 ${
           isOpen
             ? 'max-h-[410px] opacity-100'
             : 'max-h-0 opacity-0 border-0 mb-0'
@@ -45,15 +56,15 @@ export default function SpotifyPlayer() {
         />
       </div>
 
-      {/* Botão compacto */}
+      {/* Botão flutuante: somente no desktop */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-full bg-[#E8B6C8] px-3 py-2.5 sm:px-4 sm:py-3 text-white shadow-lg transition-all hover:bg-[#D99DB5] hover:scale-105"
+        className="hidden md:flex items-center gap-2 rounded-full bg-[#E8B6C8] px-3 py-2.5 md:px-4 md:py-3 text-white shadow-lg transition-all hover:bg-[#D99DB5] hover:scale-105"
         title={isOpen ? 'Minimizar música' : 'Abrir player de música'}
         aria-label={isOpen ? 'Minimizar música' : 'Abrir player de música'}
       >
         <Music2 size={20} />
-        <span className="text-xs sm:text-sm font-semibold">
+        <span className="text-xs md:text-sm font-semibold">
           {isOpen ? 'Minimizar' : 'Minha música'}
         </span>
       </button>
