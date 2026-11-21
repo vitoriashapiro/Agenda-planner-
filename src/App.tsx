@@ -24,7 +24,13 @@ import { HistoryView } from './views/HistoryView';
 import { SettingsView } from './views/SettingsView';
 
 const MainContent: React.FC = () => {
-  const { currentTab } = usePlanner();
+  const { currentTab, setCurrentTab, isAdmin } = usePlanner();
+
+  React.useEffect(() => {
+    if (currentTab === 'settings' && !isAdmin) {
+      setCurrentTab('home');
+    }
+  }, [currentTab, isAdmin, setCurrentTab]);
 
   const renderCurrentView = () => {
     switch (currentTab) {
@@ -43,7 +49,7 @@ const MainContent: React.FC = () => {
       case 'history':
         return <HistoryView />;
       case 'settings':
-        return <SettingsView />;
+        return isAdmin ? <SettingsView /> : <HomeView />;
       default:
         return <HomeView />;
     }
@@ -52,16 +58,12 @@ const MainContent: React.FC = () => {
   return (
     <div className="min-h-screen flex bg-[#FFF8FA] text-[#756570] font-sans-planner selection:bg-[#F3D6E3] selection:text-[#95677A]">
 
-      {/* Menu Lateral */}
       <Sidebar />
 
-      {/* Estrutura Principal */}
       <div className="flex-1 flex flex-col min-w-0 bg-[#FFF8FA]">
 
-        {/* Cabeçalho */}
         <Header />
 
-        {/* Conteúdo */}
         <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 py-5 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-7 md:pb-9 lg:px-8 lg:py-9 animate-in fade-in duration-300">
           <div className="w-full min-w-0">
             {renderCurrentView()}
@@ -69,16 +71,13 @@ const MainContent: React.FC = () => {
         </main>
       </div>
 
-      {/* Navegação Mobile */}
       <BottomNav />
 
-      {/* Modais e notificações */}
       <QuickAddModal />
       <GlobalSearchModal />
       <AuthModal />
       <ToastContainer />
 
-      {/* Spotify */}
       <SpotifyPlayer />
 
     </div>

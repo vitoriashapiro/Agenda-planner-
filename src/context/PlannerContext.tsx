@@ -90,6 +90,7 @@ interface PlannerContextType {
   dismissToast: (id: string) => void;
 
   currentUser: FirebaseUser | null;
+    isAdmin: boolean;
   firebaseStatus: FirebaseConnectionStatus;
   saveFirebaseCredentials: (params: FirebaseConfigParams) => Promise<boolean>;
   disconnectFirebase: () => void;
@@ -135,7 +136,7 @@ const PRIMARY_EMAIL_UID = 'ygv4wvsazLOG7MzaO7V27xSsa1A2';
 export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [currentTab, setCurrentTab] = useState<NavigationTab>('home');
+    const [currentTab, setCurrentTabState] = useState<NavigationTab>('home');
 
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const d = new Date();
@@ -180,6 +181,21 @@ export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const [toasts, setToasts] = useState<ToastInfo[]>([]);
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+    // Somente a conta principal de e-mail e senha é administradora.
+  const isAdmin = currentUser?.uid === PRIMARY_EMAIL_UID;
+
+  // Impedir que outros usuários selecionem a aba Configurações.
+  const setCurrentTab = useCallback(
+    (tab: NavigationTab) => {
+      if (tab === 'settings' && currentUser?.uid !== PRIMARY_EMAIL_UID) {
+        setCurrentTabState('home');
+        return;
+      }
+
+      setCurrentTabState(tab);
+    },
+    [currentUser]
+  );
 
   const [firebaseStatus, setFirebaseStatus] =
     useState<FirebaseConnectionStatus>(() => {
@@ -264,7 +280,8 @@ export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({
       subscriptions.forEach((unsubscribe) => unsubscribe());
       subscriptions = [];
 
-      setCurrentUser(user);
+            setCurrentUser(user);
+      setCurrentTabState('home');
 
       if (!user) {
         // Voltar ao espaço anônimo ao sair da conta.
@@ -1294,6 +1311,7 @@ export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({
     dismissToast,
 
     currentUser,
+    isAdmin,
     firebaseStatus,
     saveFirebaseCredentials,
     disconnectFirebase,

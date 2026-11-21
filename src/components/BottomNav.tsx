@@ -20,7 +20,7 @@ import { usePlanner } from '../context/PlannerContext';
 import { NavigationTab } from '../types/planner';
 
 export const BottomNav: React.FC = () => {
-  const { currentTab, setCurrentTab } = usePlanner();
+  const { currentTab, setCurrentTab, isAdmin } = usePlanner();
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
   const mainTabs = [
@@ -34,12 +34,13 @@ export const BottomNav: React.FC = () => {
     { tab: 'reminders' as NavigationTab, label: 'Lembretes', icon: Clock },
     { tab: 'favorites' as NavigationTab, label: 'Favoritos', icon: Heart },
     { tab: 'history' as NavigationTab, label: 'Histórico', icon: History },
-    { tab: 'settings' as NavigationTab, label: 'Configurações', icon: Settings },
+    ...(isAdmin
+      ? [{ tab: 'settings' as NavigationTab, label: 'Configurações', icon: Settings }]
+      : []),
   ];
 
   return (
     <>
-      {/* Menu Mais no Mobile */}
       {isMoreMenuOpen && (
         <div className="fixed inset-0 z-50 md:hidden bg-black/40 backdrop-blur-xs flex flex-col justify-end">
           <div className="bg-white rounded-t-3xl p-5 border-t border-[#F4DCE5] shadow-2xl animate-in slide-in-from-bottom duration-200">
@@ -85,7 +86,6 @@ export const BottomNav: React.FC = () => {
         </div>
       )}
 
-      {/* Barra de Navegação Inferior */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#F4DCE5] px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex items-center justify-around shadow-lg">
 
         {mainTabs.map((item) => {
@@ -106,7 +106,6 @@ export const BottomNav: React.FC = () => {
           );
         })}
 
-        {/* Música */}
         <button
           onClick={() => {
             window.dispatchEvent(new Event('planner:openSpotify'));
@@ -117,7 +116,6 @@ export const BottomNav: React.FC = () => {
           <span>Música</span>
         </button>
 
-        {/* Mais */}
         <button
           onClick={() => setIsMoreMenuOpen(true)}
           className={`flex flex-1 min-w-0 flex-col items-center gap-1 py-1 px-1 text-[10px] font-medium transition-colors ${

@@ -27,7 +27,7 @@ interface NavItem {
 }
 
 export const Sidebar: React.FC = () => {
-  const { currentTab, setCurrentTab, tasks, reminders } = usePlanner();
+  const { currentTab, setCurrentTab, tasks, reminders, isAdmin } = usePlanner();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const pendingTasksCount = tasks.filter((t) => !t.completed).length;
@@ -43,7 +43,9 @@ export const Sidebar: React.FC = () => {
     { tab: 'reminders', label: 'Lembretes', icon: Clock, badge: pendingRemindersCount },
     { tab: 'favorites', label: 'Favoritos', icon: Heart },
     { tab: 'history', label: 'Histórico', icon: History },
-    { tab: 'settings', label: 'Configurações', icon: Settings },
+    ...(isAdmin
+      ? [{ tab: 'settings' as NavigationTab, label: 'Configurações', icon: Settings }]
+      : []),
   ];
 
   return (
@@ -55,7 +57,6 @@ export const Sidebar: React.FC = () => {
         'min-h-screen sticky top-0 z-40',
       ].join(' ')}
     >
-      {/* Logo e cabeçalho */}
       <div
         className={[
           'px-4 py-5 border-b border-[#F8EEF2] flex items-center',
@@ -100,7 +101,6 @@ export const Sidebar: React.FC = () => {
         )}
       </div>
 
-      {/* Expandir menu */}
       {isCollapsed && (
         <div className="px-2 pt-3 flex justify-center">
           <button
@@ -113,7 +113,6 @@ export const Sidebar: React.FC = () => {
         </div>
       )}
 
-      {/* Navegação */}
       <nav className="flex-1 px-3 py-5 space-y-1.5 overflow-y-auto">
         {!isCollapsed && (
           <p className="px-3 mb-3 text-[9px] uppercase tracking-[0.2em] text-[#C5AAB6] font-semibold">
@@ -139,9 +138,8 @@ export const Sidebar: React.FC = () => {
                 isCollapsed ? 'justify-center px-0' : '',
               ].join(' ')}
             >
-              {/* Indicador da página ativa */}
               {isActive && !isCollapsed && (
-<span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-[#D9A2B5]" />
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-[#D9A2B5]" />
               )}
 
               <Icon
@@ -178,7 +176,6 @@ export const Sidebar: React.FC = () => {
         })}
       </nav>
 
-      {/* Rodapé */}
       {!isCollapsed && (
         <div className="p-3 mt-auto">
           <div className="p-4 rounded-2xl bg-gradient-to-br from-[#FFF9F4] to-[#F9EAF0] border border-[#F1DDE5] text-center">
