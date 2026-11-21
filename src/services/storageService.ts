@@ -346,7 +346,11 @@ export async function syncDocToFirestore<T extends { id: string }>(
 
   try {
     const docRef = doc(db, 'users', userId, subcollection, item.id);
-    await setDoc(docRef, item as Record<string, unknown>, { merge: true });
+    const cleanItem = Object.fromEntries(
+  Object.entries(item).filter(([, value]) => value !== undefined)
+);
+
+await setDoc(docRef, cleanItem, { merge: true });
   } catch (err) {
     console.warn(`Firestore sync warning on ${subcollection}/${item.id}:`, err);
   }
